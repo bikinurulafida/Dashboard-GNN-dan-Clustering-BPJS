@@ -137,7 +137,7 @@ with c4:
     st.markdown(f"<div style='{card_style}'><h4 style='color:#145A32'>Jumlah Cluster Terfilter</h4><h2>{jumlah_cluster}</h2></div>", unsafe_allow_html=True)
 
 # ================== VISUALISASI ==================
-st.subheader("📋 Tabel Peserta")
+st.markdown("<h3 style='color:#145A32;'>📋 Tabel Peserta</h3>", unsafe_allow_html=True)
 st.dataframe(df_filtered, use_container_width=True)
 
 # ---------- Karakteristik Peserta ----------
@@ -164,7 +164,7 @@ with col2:
         st.plotly_chart(fig_seg, use_container_width=True)
 
 # ---------- Distribusi Usia ----------
-st.subheader("📊 Distribusi Usia Peserta")
+st.markdown("<h3 style='color:#145A32;'>📊 Distribusi Usia Peserta</h3>", unsafe_allow_html=True)
 if 'Usia' in df_filtered.columns and total_peserta > 0:
     fig_age = px.histogram(df_filtered, x='Usia', nbins=20, color_discrete_sequence=['#1ABC9C'],
                            title="Distribusi Usia Peserta")
@@ -172,12 +172,12 @@ if 'Usia' in df_filtered.columns and total_peserta > 0:
     st.plotly_chart(fig_age, use_container_width=True)
 
 # ---------- Distribusi Diagnosis Primer ----------
-st.subheader("🩺 Distribusi Diagnosis Primer")
+st.markdown("<h3 style='color:#145A32;'>🩺 Distribusi Diagnosis Primer</h3>", unsafe_allow_html=True)
 if total_peserta > 0:
     plot_diagnosis_distribution(df_filtered)
 
 # ---------- Distribusi Biaya Klaim ----------
-st.subheader("💰 Distribusi Biaya Klaim")
+st.markdown("<h3 style='color:#145A32;'>💰 Distribusi Biaya Klaim</h3>", unsafe_allow_html=True)
 if total_peserta > 0 and any(c in df_filtered.columns for c in ['Biaya_Klaim', 'rata-rata_klaim_biaya']):
     col_cost = 'rata-rata_klaim_biaya' if 'rata-rata_klaim_biaya' in df_filtered.columns else 'Biaya_Klaim'
     fig_cost = px.histogram(df_filtered, x=col_cost, nbins=50, color_discrete_sequence=['#1ABC9C'],
@@ -186,7 +186,7 @@ if total_peserta > 0 and any(c in df_filtered.columns for c in ['Biaya_Klaim', '
     st.plotly_chart(fig_cost, use_container_width=True)
 
 # ---------- Distribusi Usia per Cluster ----------
-st.subheader("📦 Distribusi Usia per Cluster")
+st.markdown("<h3 style='color:#145A32;'>📦 Distribusi Usia per Cluster</h3>", unsafe_allow_html=True)
 if total_peserta > 0 and {'Usia', 'k-means_cluster'}.issubset(node_peserta_filtered.columns):
     fig_box = px.box(node_peserta_filtered, x='k-means_cluster', y='Usia', color='k-means_cluster',
                      color_discrete_sequence=px.colors.qualitative.Vivid,
@@ -194,7 +194,7 @@ if total_peserta > 0 and {'Usia', 'k-means_cluster'}.issubset(node_peserta_filte
     st.plotly_chart(fig_box, use_container_width=True)
 
 # ---------- Proporsi Cluster ----------
-st.subheader("📈 Proporsi Peserta per Cluster")
+st.markdown("<h3 style='color:#145A32;'>📈 Proporsi Peserta per Cluster</h3>", unsafe_allow_html=True)
 if total_peserta > 0:
     cluster_count = node_peserta_filtered['k-means_cluster'].value_counts().reset_index()
     cluster_count.columns = ['Cluster', 'Jumlah']
@@ -227,12 +227,12 @@ if total_peserta > 0:
     st.plotly_chart(fig_cluster, use_container_width=True)
 
 # ---------- Visualisasi Peserta-Faskes ----------
-st.subheader("🌐 Visualisasi Peserta-Faskes (Graph)")
+st.markdown("<h3 style='color:#145A32;'>🌐 Visualisasi Peserta-Faskes (Graph)</h3>", unsafe_allow_html=True)
 if total_peserta > 0:
     visualize_graph(node_peserta_filtered, edges_filtered)
 
 # ---------- Tabel Indikasi Anomali ----------
-st.subheader("🚨 Peserta Indikasi Anomali")
+st.markdown("<h3 style='color:#145A32;'>🚨 Peserta Indikasi Anomali</h3>", unsafe_allow_html=True)
 anomali_df = node_peserta_filtered[node_peserta_filtered['anomali'] == True]
 if len(anomali_df) > 0:
     st.dataframe(anomali_df, use_container_width=True)
