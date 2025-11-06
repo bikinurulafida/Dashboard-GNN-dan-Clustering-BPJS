@@ -200,22 +200,21 @@ if total_peserta > 0:
     cluster_count.columns = ['Cluster', 'Jumlah']
     cluster_count = cluster_count.sort_values('Cluster')
 
-    # Warna manual untuk tiap cluster
-    cluster_colors = {
-        c: px.colors.qualitative.Vivid[i % len(px.colors.qualitative.Vivid)]
-        for i, c in enumerate(sorted(cluster_count['Cluster'].unique()))
-    }
-
+    # Warna hijau lembut
     fig_cluster = px.bar(
         cluster_count,
         x='Cluster',
         y='Jumlah',
         text='Jumlah',
-        color='Cluster',
-        color_discrete_map=cluster_colors,
-        title="Proporsi Peserta per Cluster"
+        title="Proporsi Peserta per Cluster",
     )
-    fig_cluster.update_traces(textposition='outside')
+
+    # Set semua batang jadi warna hijau
+    fig_cluster.update_traces(
+        marker_color='#1ABC9C',  # warna hijau toska
+        textposition='outside'
+    )
+
     fig_cluster.update_layout(
         title_font_color='#145A32',
         showlegend=False,
@@ -224,6 +223,7 @@ if total_peserta > 0:
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
     )
+
     st.plotly_chart(fig_cluster, use_container_width=True)
 
 # ---------- Visualisasi Peserta-Faskes ----------
