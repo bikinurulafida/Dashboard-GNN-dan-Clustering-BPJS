@@ -199,10 +199,20 @@ if total_peserta > 0:
     cluster_count = node_peserta_filtered['k-means_cluster'].value_counts().reset_index()
     cluster_count.columns = ['Cluster', 'Jumlah']
     cluster_count = cluster_count.sort_values('Cluster')
-    fig_cluster = px.bar(cluster_count, x='Cluster', y='Jumlah', text='Jumlah', color='Cluster',
-                         color_discrete_sequence=px.colors.qualitative.Vivid,
-                         title="Proporsi Peserta per Cluster")
+
+    custom_colors = ['#1ABC9C', '#16A085', '#117864', '#0E6655', '#0B5345', '#145A32', '#196F3D', '#27AE60']
+
+    fig_cluster = px.bar(
+        cluster_count,
+        x='Cluster',
+        y='Jumlah',
+        text='Jumlah',
+        color='Cluster',
+        color_discrete_sequence=custom_colors,
+        title="Proporsi Peserta per Cluster"
+    )
     fig_cluster.update_layout(title_font_color='#145A32')
+    fig_cluster.update_traces(textposition='outside', textfont_size=14)
     st.plotly_chart(fig_cluster, use_container_width=True)
 
 # ---------- Visualisasi Peserta-Faskes ----------
