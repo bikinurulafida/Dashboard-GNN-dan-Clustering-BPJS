@@ -177,14 +177,22 @@ if total_peserta > 0:
     col1, col2 = st.columns(2)
     with col1:
         fig_primer = plot_diagnosis_distribution(df_filtered)
-        fig_primer.update_layout(title_text="Distribusi Diagnosis Primer", title_font_color="#145A32")
+        fig_primer.update_layout(
+            title_text="Distribusi Diagnosis Primer",
+            title_font_color="#145A32",  # ubah title jadi hijau
+            title_font=dict(size=18)
+        )
         st.plotly_chart(fig_primer, use_container_width=True)
     with col2:
         from helper import plot_diagnosis_secondary_distribution
         fig_sekunder = plot_diagnosis_secondary_distribution(df_filtered)
-        fig_sekunder.update_layout(title_text="Distribusi Diagnosis Sekunder", title_font_color="#145A32")
+        fig_sekunder.update_layout(
+            title_text="Distribusi Diagnosis Sekunder",
+            title_font_color="#145A32",  # ubah title jadi hijau
+            title_font=dict(size=18)
+        )
         st.plotly_chart(fig_sekunder, use_container_width=True)
-        
+                
 # ---------- Distribusi Biaya Klaim ----------
 st.markdown("<h3 style='color:#145A32;'>💰 Distribusi Biaya Klaim</h3>", unsafe_allow_html=True)
 if total_peserta > 0 and any(c in df_filtered.columns for c in ['Biaya_Klaim', 'rata-rata_klaim_biaya']):
