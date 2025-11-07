@@ -1,7 +1,7 @@
 # main.py
 import streamlit as st
 from load_data import load_data_visualization, load_data_gnn
-from helper import plot_table, plot_diagnosis_distribution, compute_kmeans, visualize_graph
+from helper import plot_table, plot_diagnosis_distribution, compute_kmeans, visualize_graph, plot_diagnosis_secondary_distribution
 import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -16,13 +16,13 @@ st.set_page_config(
     layout="wide"
 )
 
-# ---------- HEADER ----------
+# ----------------- HEADER -----------------
 st.markdown("""
-    <h1 style='text-align:center; color:#145A32'>
+    <h1 style='text-align:center; color:#145A32; text-shadow:1px 1px 2px #ccc;'>
         Dashboard Analisis GNN & Clustering Peserta Tuberculosis BPJS Kesehatan Jakarta
     </h1>
 """, unsafe_allow_html=True)
-st.markdown("<hr style='border:1px solid #145A32;'>", unsafe_allow_html=True)
+st.markdown("<hr style='border:2px solid #1ABC9C; border-radius:5px'>", unsafe_allow_html=True)
 
 # ================== LOAD DATA ==================
 try:
@@ -67,6 +67,7 @@ if embedding_cols:
     node_peserta_clustered = detect_anomalies(node_peserta_clustered, embedding_cols)
 
 # ================== FILTER DROPDOWN ==================
+st.markdown("### 🔎 Filter Peserta", unsafe_allow_html=True)
 col1, col2, col3, col4, col5 = st.columns(5)
 with col1:
     cluster_options = ["All"] + sorted(node_peserta_clustered['k-means_cluster'].unique().tolist())
@@ -119,28 +120,36 @@ merged['Biaya_Klaim'] = pd.to_numeric(merged.get('Biaya_Klaim', 0), errors='coer
 rata_klaim = round(merged['Biaya_Klaim'].sum() / total_peserta, 2) if total_peserta > 0 else 0
 jumlah_cluster = len(node_peserta_filtered['k-means_cluster'].unique()) if total_peserta > 0 else 0
 
+st.markdown("### 📊 Summary Peserta", unsafe_allow_html=True)
 c1, c2, c3, c4 = st.columns(4)
 card_style = """
-background-color:#D5F5E3; 
+background: linear-gradient(135deg, #ABEBC6, #1ABC9C);
 padding:18px; 
-border-radius:12px; 
+border-radius:15px; 
 text-align:center; 
-border:1px solid #82E0AA
+color:white;
+box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
 """
 with c1:
-    st.markdown(f"<div style='{card_style}'><h4 style='color:#145A32'>Total Peserta</h4><h2>{total_peserta}</h2></div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='{card_style}'><h4>Total Peserta</h4><h2>{total_peserta}</h2></div>", unsafe_allow_html=True)
 with c2:
-    st.markdown(f"<div style='{card_style}'><h4 style='color:#145A32'>Rata-rata Usia</h4><h2>{usia_mean}</h2></div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='{card_style}'><h4>Rata-rata Usia</h4><h2>{usia_mean}</h2></div>", unsafe_allow_html=True)
 with c3:
-    st.markdown(f"<div style='{card_style}'><h4 style='color:#145A32'>Rata-rata Klaim (FKRTL)</h4><h2>{rata_klaim}</h2></div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='{card_style}'><h4>Rata-rata Klaim (FKRTL)</h4><h2>{rata_klaim}</h2></div>", unsafe_allow_html=True)
 with c4:
-    st.markdown(f"<div style='{card_style}'><h4 style='color:#145A32'>Jumlah Cluster Terfilter</h4><h2>{jumlah_cluster}</h2></div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='{card_style}'><h4>Jumlah Cluster Terfilter</h4><h2>{jumlah_cluster}</h2></div>", unsafe_allow_html=True)
 
 # ================== VISUALISASI ==================
 st.markdown("<h3 style='color:#145A32;'>📋 Tabel Peserta</h3>", unsafe_allow_html=True)
-st.dataframe(df_filtered, use_container_width=True)
+st.dataframe(
+    df_filtered.style.set_table_styles(
+        [{'selector': 'tr:nth-child(even)', 'props': [('background-color', '#E8F8F5')]}]
+    ),
+    use_container_width=True
+)
 
 # ---------- Karakteristik Peserta ----------
+st.markdown("<h3 style='color:#145A32;'>👥 Karakteristik Peserta</h3>", unsafe_allow_html=True)
 col1, col2 = st.columns(2)
 with col1:
     if 'jenis_kelamin' in df_filtered.columns and total_peserta > 0:
@@ -150,7 +159,7 @@ with col1:
                             title="Distribusi Jenis Kelamin Peserta",
                             color_discrete_sequence=px.colors.sequential.Teal)
         fig_gender.update_traces(textinfo='percent+label', textfont_size=16)
-        fig_gender.update_layout(title_font_color='#145A32')
+        fig_gender.update_layout(title_font_color='#145A32', plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
         st.plotly_chart(fig_gender, use_container_width=True)
 with col2:
     if 'Segmentasi' in df_filtered.columns and total_peserta > 0:
@@ -160,7 +169,7 @@ with col2:
                          title="Distribusi Segmentasi Peserta",
                          color_discrete_sequence=px.colors.sequential.Teal)
         fig_seg.update_traces(textinfo='percent+label', textfont_size=16)
-        fig_seg.update_layout(title_font_color='#145A32')
+        fig_seg.update_layout(title_font_color='#145A32', plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
         st.plotly_chart(fig_seg, use_container_width=True)
 
 # ---------- Distribusi Usia ----------
@@ -168,7 +177,7 @@ st.markdown("<h3 style='color:#145A32;'>📊 Distribusi Usia Peserta</h3>", unsa
 if 'Usia' in df_filtered.columns and total_peserta > 0:
     fig_age = px.histogram(df_filtered, x='Usia', nbins=20, color_discrete_sequence=['#1ABC9C'],
                            title="Distribusi Usia Peserta")
-    fig_age.update_layout(title_font_color='#145A32')
+    fig_age.update_layout(title_font_color='#145A32', plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
     st.plotly_chart(fig_age, use_container_width=True)
 
 # ---------- Distribusi Diagnosis Primer & Sekunder ----------
@@ -178,7 +187,6 @@ if total_peserta > 0:
     with col1:
         plot_diagnosis_distribution(df_filtered)
     with col2:
-        from helper import plot_diagnosis_secondary_distribution
         plot_diagnosis_secondary_distribution(df_filtered)
 
 # ---------- Distribusi Biaya Klaim ----------
@@ -187,12 +195,8 @@ if total_peserta > 0 and any(c in df_filtered.columns for c in ['Biaya_Klaim', '
     col_cost = 'rata-rata_klaim_biaya' if 'rata-rata_klaim_biaya' in df_filtered.columns else 'Biaya_Klaim'
     fig_cost = px.histogram(df_filtered, x=col_cost, nbins=50, color_discrete_sequence=['#1ABC9C'],
                             title="Distribusi Biaya Klaim")
-    fig_cost.update_layout(title_font_color='#145A32')
+    fig_cost.update_layout(title_font_color='#145A32', plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
     st.plotly_chart(fig_cost, use_container_width=True)
-
-
-
-
 
 # ---------- Distribusi Usia per Cluster ----------
 st.markdown("<h3 style='color:#145A32;'>📦 Distribusi Usia per Cluster</h3>", unsafe_allow_html=True)
@@ -200,6 +204,7 @@ if total_peserta > 0 and {'Usia', 'k-means_cluster'}.issubset(node_peserta_filte
     fig_box = px.box(node_peserta_filtered, x='k-means_cluster', y='Usia', color='k-means_cluster',
                      color_discrete_sequence=px.colors.qualitative.Vivid,
                      labels={'k-means_cluster': 'Cluster', 'Usia': 'Usia'})
+    fig_box.update_layout(title_font_color='#145A32', plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
     st.plotly_chart(fig_box, use_container_width=True)
 
 # ---------- Proporsi Cluster ----------
@@ -208,31 +213,9 @@ if total_peserta > 0:
     cluster_count = node_peserta_filtered['k-means_cluster'].value_counts().reset_index()
     cluster_count.columns = ['Cluster', 'Jumlah']
     cluster_count = cluster_count.sort_values('Cluster')
-
-    # Warna hijau lembut
-    fig_cluster = px.bar(
-        cluster_count,
-        x='Cluster',
-        y='Jumlah',
-        text='Jumlah',
-        title="Proporsi Peserta per Cluster",
-    )
-
-    # Set semua batang jadi warna hijau
-    fig_cluster.update_traces(
-        marker_color='#1ABC9C',  # warna hijau toska
-        textposition='outside'
-    )
-
-    fig_cluster.update_layout(
-        title_font_color='#145A32',
-        showlegend=False,
-        xaxis_title="Cluster",
-        yaxis_title="Jumlah Peserta",
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)',
-    )
-
+    fig_cluster = px.bar(cluster_count, x='Cluster', y='Jumlah', text='Jumlah')
+    fig_cluster.update_traces(marker_color='#1ABC9C', textposition='outside')
+    fig_cluster.update_layout(title_font_color='#145A32', plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', showlegend=False)
     st.plotly_chart(fig_cluster, use_container_width=True)
 
 # ---------- Visualisasi Peserta-Faskes ----------
