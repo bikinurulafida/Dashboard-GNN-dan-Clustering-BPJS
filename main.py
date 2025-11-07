@@ -190,6 +190,10 @@ if total_peserta > 0 and any(c in df_filtered.columns for c in ['Biaya_Klaim', '
     fig_cost.update_layout(title_font_color='#145A32')
     st.plotly_chart(fig_cost, use_container_width=True)
 
+
+
+
+
 # ---------- Distribusi Usia per Cluster ----------
 st.markdown("<h3 style='color:#145A32;'>📦 Distribusi Usia per Cluster</h3>", unsafe_allow_html=True)
 if total_peserta > 0 and {'Usia', 'k-means_cluster'}.issubset(node_peserta_filtered.columns):
@@ -235,11 +239,3 @@ if total_peserta > 0:
 st.markdown("<h3 style='color:#145A32;'>🌐 Visualisasi Peserta-Faskes (Graph)</h3>", unsafe_allow_html=True)
 if total_peserta > 0:
     visualize_graph(node_peserta_filtered, edges_filtered)
-
-# ---------- Tabel Indikasi Anomali ----------
-st.markdown("<h3 style='color:#145A32;'>🚨 Peserta Indikasi Anomali</h3>", unsafe_allow_html=True)
-anomali_df = node_peserta_filtered[node_peserta_filtered['anomali'] == True]
-if len(anomali_df) > 0:
-    st.dataframe(anomali_df, use_container_width=True)
-else:
-    st.info("Tidak ada peserta yang terindikasi anomali.")
