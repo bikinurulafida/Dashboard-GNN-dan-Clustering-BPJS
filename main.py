@@ -49,26 +49,9 @@ node_peserta_clustered, edges_clustered, mode_per_faskes = compute_kmeans(embedd
 if 'k-means_cluster' in node_peserta_clustered.columns:
     node_peserta_clustered['k-means_cluster'] = node_peserta_clustered['k-means_cluster'].astype(int)
 
-# ================== DETEKSI ANOMALI ==================
-def detect_anomalies(node_peserta, embedding_cols, threshold=3.0):
-    if 'k-means_cluster' not in node_peserta.columns:
-        raise ValueError("Kolom 'k-means_cluster' tidak ditemukan")
-    centroids = node_peserta.groupby('k-means_cluster')[embedding_cols].mean()
-    distances = [
-        np.linalg.norm(row[embedding_cols].values - centroids.loc[row['k-means_cluster']].values)
-        for _, row in node_peserta.iterrows()
-    ]
-    node_peserta['distance_to_centroid'] = distances
-    z_scores = (node_peserta['distance_to_centroid'] - np.mean(distances)) / np.std(distances)
-    node_peserta['anomali'] = z_scores > threshold
-    return node_peserta
-
-if embedding_cols:
-    node_peserta_clustered = detect_anomalies(node_peserta_clustered, embedding_cols)
-
 # ================== FILTER DROPDOWN ==================
 st.markdown("### 🔎 Filter Peserta", unsafe_allow_html=True)
-col1, col2, col3, col4, col5 = st.columns(5)
+col1, col2, col3, col4 = st.columns(4)
 with col1:
     cluster_options = ["All"] + sorted(node_peserta_clustered['k-means_cluster'].unique().tolist())
     selected_cluster = st.selectbox("Cluster", cluster_options)
@@ -81,9 +64,6 @@ with col3:
 with col4:
     provinsi_options = ["All"] + sorted(node_faskes['Provinsi'].dropna().unique().tolist()) if 'Provinsi' in node_faskes.columns else ["All"]
     selected_provinsi = st.selectbox("Provinsi", provinsi_options)
-with col5:
-    anomali_options = ["All", "Normal", "Anomali"]
-    selected_anomali = st.selectbox("Status Anomali", anomali_options)
 
 # ================== APPLY FILTER ==================
 df_filtered = df_vis.copy()
@@ -106,11 +86,6 @@ if selected_provinsi != "All" and 'Provinsi' in node_faskes.columns:
     peserta_in_edges = edges_filtered['peserta_id'].unique().tolist()
     node_peserta_filtered = node_peserta_filtered[node_peserta_filtered['peserta_id'].isin(peserta_in_edges)]
     df_filtered = df_filtered[df_filtered['peserta_id'].isin(peserta_in_edges)]
-
-if selected_anomali != "All":
-    node_peserta_filtered = node_peserta_filtered[node_peserta_filtered['anomali'] == (selected_anomali == "Anomali")]
-    df_filtered = df_filtered[df_filtered['peserta_id'].isin(node_peserta_filtered['peserta_id'])]
-    edges_filtered = edges_filtered[edges_filtered['peserta_id'].isin(node_peserta_filtered['peserta_id'])]
 
 # ================== SUMMARY CARDS ==================
 total_peserta = len(df_filtered)
