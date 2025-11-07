@@ -192,7 +192,7 @@ if total_peserta > 0:
             title_font=dict(size=18)
         )
         st.plotly_chart(fig_sekunder, use_container_width=True)
-                
+
 # ---------- Distribusi Biaya Klaim ----------
 st.markdown("<h3 style='color:#145A32;'>💰 Distribusi Biaya Klaim</h3>", unsafe_allow_html=True)
 if total_peserta > 0 and any(c in df_filtered.columns for c in ['Biaya_Klaim', 'rata-rata_klaim_biaya']):
