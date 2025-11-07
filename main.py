@@ -171,10 +171,15 @@ if 'Usia' in df_filtered.columns and total_peserta > 0:
     fig_age.update_layout(title_font_color='#145A32')
     st.plotly_chart(fig_age, use_container_width=True)
 
-# ---------- Distribusi Diagnosis Primer ----------
-st.markdown("<h3 style='color:#145A32;'>🩺 Distribusi Diagnosis Primer</h3>", unsafe_allow_html=True)
+# ---------- Distribusi Diagnosis Primer & Sekunder ----------
+st.markdown("<h3 style='color:#145A32;'>🩺 Distribusi Diagnosis Primer & Sekunder</h3>", unsafe_allow_html=True)
 if total_peserta > 0:
-    plot_diagnosis_distribution(df_filtered)
+    col1, col2 = st.columns(2)
+    with col1:
+        plot_diagnosis_distribution(df_filtered)
+    with col2:
+        from helper import plot_diagnosis_secondary_distribution
+        plot_diagnosis_secondary_distribution(df_filtered)
 
 # ---------- Distribusi Biaya Klaim ----------
 st.markdown("<h3 style='color:#145A32;'>💰 Distribusi Biaya Klaim</h3>", unsafe_allow_html=True)

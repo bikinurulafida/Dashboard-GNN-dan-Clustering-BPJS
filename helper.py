@@ -27,6 +27,22 @@ def plot_diagnosis_distribution(df):
     else:
         st.warning("Kolom 'Diagnosis_Primer' atau 'modus_diagnosis_primer' tidak ditemukan.")
 
+def plot_diagnosis_secondary_distribution(df):
+    col = 'modus_diagnosis_sekunder' if 'modus_diagnosis_sekunder' in df.columns else 'Diagnosis_Sekunder'
+    if col in df.columns:
+        diag_count = df[col].dropna().value_counts().reset_index()
+        diag_count.columns = [col, 'Jumlah']
+        fig = px.bar(
+            diag_count, x=col, y='Jumlah', text='Jumlah',
+            title="Distribusi Diagnosis Sekunder",
+            color=col,
+            color_discrete_sequence=px.colors.sequential.Teal
+        )
+        fig.update_traces(texttemplate='%{text}', textposition='outside')
+        st.plotly_chart(fig, use_container_width=True)
+    else:
+        st.warning("Kolom 'Diagnosis_Sekunder' atau 'modus_diagnosis_sekunder' tidak ditemukan.")
+
 def plot_age_distribution(df):
     """
     Histogram Distribusi Usia Peserta dengan warna flat.
